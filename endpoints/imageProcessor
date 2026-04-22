@@ -1,0 +1,105 @@
+const fs = require('fs');
+const https = require('https');
+
+async function extractTextFromImage(imageBuffer) {
+    console.log('[DEBUG] extractTextFromImage: Starting image text extraction');
+    console.log('[DEBUG] Image buffer size:', imageBuffer.length, 'bytes');
+    
+    return new Promise((resolve, reject) => {
+        const base64Image = imageBuffer.toString('base64');
+        console.log('[DEBUG] Base64 image length:', base64Image.length);
+
+        const requestData = JSON.stringify({
+            "contents": [
+                {
+                    "parts": [
+                        {
+                            "inline_data": {
+                                "mime_type": "image/png",
+                                "data": base64Image
+                            }
+                        },
+                        {
+                            "text": "Berikan text yang ada di gambar ini saja, tidak ada informasi lain cukup yang ada di gambar saja, jangan ada text lain kalo bukan dari gambar nya."
+                        }
+                    ]
+                }
+            ]
+        });
+
+        console.log('[DEBUG] Request data prepared, length:', requestData.length);
+
+        const options = {
+            hostname: 'generativelanguage.googleapis.com',
+            path: '/v1beta/models/gemini-2.5-flash-lite:generateContent',
+            method: 'POST',
+            headers: {
+                'x-goog-api-key': 'AIzaSyB3-2egs0udKCDX_F7I58uVRAwv7OUX1G8',
+                'Content-Type': 'application/json',
+                'Content-Length': Buffer.byteLength(requestData)
+            }
+        };
+
+        console.log('[DEBUG] Making request to Gemini API...');
+
+        const req = https.request(options, (res) => {
+            console.log('[DEBUG] API Response status:', res.statusCode);
+            console.log('[DEBUG] API Response headers:', res.headers);
+
+            let data = '';
+
+            res.on('data', (chunk) => {
+                data += chunk;
+            });
+
+            res.on('end', () => {
+                console.log('[DEBUG] Received all response data');
+                console.log('[DEBUG] Response data length:', data.length);
+                
+                try {
+                    const response = JSON.parse(data);
+                    console.log('[DEBUG] Response parsed successfully');
+                    
+                    if (response.candidates && response.candidates[0] && response.candidates[0].content) {
+                        const text = response.candidates[0].content.parts[0].text;
+                        console.log('[DEBUG] ✅ Text extracted:', text);
+                        resolve({ status: true, response: text });
+                    } else {
+                        console.log('[DEBUG] ❌ No text found in response');
+                        console.log('[DEBUG] Response structure:', JSON.stringify(response, null, 2));
+                        
+                        if (response.error) {
+                            console.log('[DEBUG] API Error:', response.error);
+                        }
+                        
+                        resolve({ status: false, response: 'Tidak ada teks yang ditemukan' });
+                    }
+                } catch (error) {
+                    console.error('[DEBUG] ❌ JSON parse error:', error);
+                    console.log('[DEBUG] Raw response data:', data);
+                    reject(error);
+                }
+            });
+        });
+
+        req.on('error', (error) => {
+            console.error('[DEBUG] ❌ Request error:', error);
+            reject(error);
+        });
+
+        req.on('timeout', () => {
+            console.error('[DEBUG] ❌ Request timeout');
+            req.destroy();
+            reject(new Error('Request timeout'));
+        });
+
+        req.setTimeout(30000); // 30 second timeout
+
+        console.log('[DEBUG] Sending request...');
+        req.write(requestData);
+        req.end();
+        console.log('[DEBUG] Request sent');
+    });
+}
+
+module.exports = { extractTextFromImage };

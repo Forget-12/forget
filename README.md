@@ -1,12 +1,12 @@
 ---
-title: '1'
-emoji: 🐨
+title: Khususan Indra
+emoji: 🤣
 colorFrom: blue
-colorTo: red
-sdk: gradio
-sdk_version: 6.13.0
-app_file: app.py
-pinned: false
+colorTo: yellow
+sdk: docker
+sdk_version: 6.0.0
+license: apache-2.0
+short_description: antibot ai
 ---
 
 Check out the configuration reference at https://huggingface.co/docs/hub/spaces-config-reference
