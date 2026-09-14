@@ -1,45 +1,33 @@
-FROM node:20-slim
+FROM node:20-bullseye
 
-# Install dependensi sistem untuk Chromium (Playwright)
-RUN apt-get update && apt-get install -y \
-    wget \
-    gnupg \
-    ca-certificates \
-    procps \
-    libasound2 \
-    libatk-bridge2.0-0 \
-    libatk1.0-0 \
-    libcups2 \
-    libdbus-1-3 \
-    libdrm2 \
-    libgbm1 \
-    libgtk-3-0 \
-    libnspr4 \
-    libnss3 \
-    libxcomposite1 \
-    libxdamage1 \
-    libxfixes3 \
-    libxkbcommon0 \
-    libxrandr2 \
-    xdg-utils \
-    --no-install-recommends \
-    && rm -rf /var/lib/apt/lists/*
+# Install ALL dependencies untuk OpenCV + Chrome
+RUN apt update && apt install -y \
+    wget gnupg ca-certificates xvfb \
+    fonts-liberation libappindicator3-1 libasound2 libatk-bridge2.0-0 \
+    libatk1.0-0 libxss1 libnss3 libxcomposite1 libxdamage1 libxrandr2 libgbm1 \
+    python3 make g++ pkg-config cmake \
+    libcairo2-dev libjpeg-dev libpng-dev libgif-dev librsvg2-dev \
+    libopencv-dev \
+    && wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb \
+    && apt install -y ./google-chrome-stable_current_amd64.deb \
+    && rm google-chrome-stable_current_amd64.deb \
+    && apt clean
 
 WORKDIR /app
 
-# Copy package.json dulu biar caching npm lebih cepat
+RUN mkdir -p /app/endpoints && \
+    mkdir -p /app/cache
+
 COPY package*.json ./
+
+# Install OpenCV dengan build from source
 RUN npm install
 
-# Install Chromium via Playwright (otomatis handle semua dependensi)
-RUN npx playwright install chromium
-
-# Copy sisa kode
 COPY . .
-
-# Set CHROME_PATH ke Chromium bawaan Playwright
-ENV CHROME_PATH=/root/.cache/ms-playwright/chromium-*/chrome-linux/chrome
 
 EXPOSE 7860
 
-CMD ["node", "index.js"]
+CMD rm -f /tmp/.X99-lock && \
+    Xvfb :99 -screen 0 1024x768x24 & \
+    export DISPLAY=:99 && \
+    npm start
