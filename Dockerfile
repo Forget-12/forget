@@ -4,7 +4,7 @@ FROM node:20-bullseye
 RUN apt update && apt install -y \
     wget gnupg ca-certificates xvfb xauth \
     fonts-liberation fonts-noto-color-emoji \
-    libappindicator3-1 libasound2 libatk-bridge2.0-0 \
+    libayatana-appindicator3-1 libasound2 libatk-bridge2.0-0 \
     libatk1.0-0 libxss1 libnss3 libxcomposite1 libxdamage1 libxrandr2 libgbm1 \
     libx11-xcb1 libxcursor1 libxi6 libxtst6 libdrm2 \
     python3 make g++ pkg-config cmake \
