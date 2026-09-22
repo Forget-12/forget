@@ -1,17 +1,19 @@
 FROM node:20-bullseye
 
 # Install ALL dependencies untuk OpenCV + Chrome
-RUN apt update && apt install -y \
+RUN apt-get update && apt-get install -y --no-install-recommends \
     wget gnupg ca-certificates xvfb \
-    fonts-liberation libappindicator3-1 libasound2 libatk-bridge2.0-0 \
+    fonts-liberation libayatana-appindicator3-1 libasound2 libatk-bridge2.0-0 \
     libatk1.0-0 libxss1 libnss3 libxcomposite1 libxdamage1 libxrandr2 libgbm1 \
     python3 make g++ pkg-config cmake \
     libcairo2-dev libjpeg-dev libpng-dev libgif-dev librsvg2-dev \
     libopencv-dev \
-    && wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb \
-    && apt install -y ./google-chrome-stable_current_amd64.deb \
+    && wget -q https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb \
+    && apt-get install -y ./google-chrome-stable_current_amd64.deb || apt-get install -fy \
     && rm google-chrome-stable_current_amd64.deb \
-    && apt clean
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
+
 
 WORKDIR /app
 
