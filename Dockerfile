@@ -1,18 +1,18 @@
 FROM node:20-bullseye
 
 # Install ALL dependencies untuk OpenCV + Chrome
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    wget gnupg ca-certificates xvfb \
-    fonts-liberation libasound2 libatk-bridge2.0-0 \
-    libatk1.0-0 libxss1 libnss3 libxcomposite1 libxdamage1 libxrandr2 libgbm1 \
-    python3 make g++ pkg-config cmake \
-    libcairo2-dev libjpeg-dev libpng-dev libgif-dev librsvg2-dev \
-    libopencv-dev \
-    && wget -q https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb \
-    && apt-get install -y ./google-chrome-stable_current_amd64.deb || apt-get install -fy \
-    && rm google-chrome-stable_current_amd64.deb \
-    && apt-get clean \
-    && rm -rf /var/lib/apt/lists/*
+RUN rm -rf /var/lib/apt/lists/* && \
+    apt clean && \
+    apt update -o Acquire::Retries=5 -o Acquire::http::Pipeline-Depth=0 && \
+    apt install -y --no-install-recommends \
+        -o Acquire::Retries=10 \
+        -o Acquire::http::Timeout=60 \
+        wget gnupg ca-certificates xvfb \
+        fonts-liberation libasound2 libatk-bridge2.0-0 libatk1.0-0 \
+        libcups2 libdbus-1-3 libdrm2 libgbm1 libgtk-3-0 libnspr4 libnss3 \
+        libx11-xcb1 libxcomposite1 libxdamage1 libxfixes3 libxkbcommon0 \
+        libxrandr2 libxshmfence1 && \
+    apt clean && rm -rf /var/lib/apt/lists/*
 
 
 WORKDIR /app
