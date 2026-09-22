@@ -3,7 +3,7 @@ FROM node:20-bullseye
 # Install ALL dependencies untuk OpenCV + Chrome
 RUN apt-get update && apt-get install -y --no-install-recommends \
     wget gnupg ca-certificates xvfb \
-    fonts-liberation libayatana-appindicator3-1 libasound2 libatk-bridge2.0-0 \
+    fonts-liberation libasound2 libatk-bridge2.0-0 \
     libatk1.0-0 libxss1 libnss3 libxcomposite1 libxdamage1 libxrandr2 libgbm1 \
     python3 make g++ pkg-config cmake \
     libcairo2-dev libjpeg-dev libpng-dev libgif-dev librsvg2-dev \
