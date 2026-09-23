@@ -1,3 +1,5 @@
+# syntax=docker/dockerfile:1.6
+
 # =========================================================
 # STAGE 1: BUILDER — compile canvas & native modules
 # =========================================================
@@ -7,15 +9,10 @@ ENV DEBIAN_FRONTEND=noninteractive
 ENV PUPPETEER_SKIP_DOWNLOAD=true
 ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
 
-# Build deps untuk canvas: python, compiler, dan dev headers
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    chromium \
-    xvfb \
-    xauth \
-    ca-certificates \
-    fonts-liberation \
- && apt-get clean \
- && rm -rf /var/lib/apt/lists/*
+    python3 make g++ pkg-config \
+    libcairo2-dev libpango1.0-dev libjpeg-dev libgif-dev librsvg2-dev \
+ && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
 COPY package*.json ./
@@ -25,7 +22,7 @@ RUN npm install --omit=dev --no-audit --no-fund \
 
 
 # =========================================================
-# STAGE 2: RUNTIME — hanya binary + deps runtime
+# STAGE 2: RUNTIME
 # =========================================================
 FROM node:20-bookworm-slim
 
@@ -36,10 +33,10 @@ ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
 ENV PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium
 ENV CHROME_PATH=/usr/bin/chromium
 
-# Chromium + Xvfb + library RUNTIME yang dibutuhkan canvas (bukan -dev)
 RUN apt-get update && apt-get install -y --no-install-recommends \
     chromium \
     xvfb \
+    xauth \
     ca-certificates \
     fonts-liberation \
     libcairo2 \
@@ -53,7 +50,6 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 
 WORKDIR /app
 
-# Copy node_modules dari builder (sudah termasuk canvas.node hasil compile)
 COPY --from=builder /app/node_modules ./node_modules
 COPY package*.json ./
 COPY . .
