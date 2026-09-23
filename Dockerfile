@@ -9,9 +9,13 @@ ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
 
 # Build deps untuk canvas: python, compiler, dan dev headers
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    python3 make g++ pkg-config \
-    libcairo2-dev libpango1.0-dev libjpeg-dev libgif-dev librsvg2-dev \
- && apt-get clean && rm -rf /var/lib/apt/lists/*
+    chromium \
+    xvfb \
+    xauth \
+    ca-certificates \
+    fonts-liberation \
+ && apt-get clean \
+ && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
 COPY package*.json ./
