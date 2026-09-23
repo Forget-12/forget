@@ -23,7 +23,7 @@ RUN npm install --omit=dev --no-audit --no-fund \
 # =========================================================
 # STAGE 2: RUNTIME — hanya binary + deps runtime
 # =========================================================
-FROM --platform=linux/arm64 node:20-bookworm-slim
+FROM node:20-bookworm-slim
 
 ENV DEBIAN_FRONTEND=noninteractive
 ENV NODE_ENV=production
