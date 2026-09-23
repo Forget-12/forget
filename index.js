@@ -83,13 +83,13 @@ function logMessage(typeChar, text) {
 // ======================================================
 
 const app = express();
-const port = process.env.PORT || 7869;
+const port = 8080;
 const authToken = process.env.authToken || null;
 const domain = process.env.DOMAIN || `https://forgets-Me12.hf.space`;
 
 // === POOL CONFIG BARU: 1 browser, banyak tab ===
 global.browserLimit = Number(process.env.browserLimit) || 1;
-global.pagesPerBrowser = Number(process.env.pagesPerBrowser) || 5;
+global.pagesPerBrowser = Number(process.env.pagesPerBrowser) || 2;
 global.timeOut = Number(process.env.timeOut) || 180000;
 
 const CACHE_DIR = path.join(__dirname, "cache");
