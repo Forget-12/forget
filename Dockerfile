@@ -31,6 +31,6 @@ RUN npm install --omit=dev --no-audit --no-fund \
 
 COPY . .
 
-EXPOSE 7860
+EXPOSE 7869
 
 CMD ["xvfb-run", "-a", "--server-args=-screen 0 1024x768x24", "node", "index.js"]
