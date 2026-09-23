@@ -1,7 +1,7 @@
 # =========================================================
 # STAGE 1: BUILDER — compile canvas & native modules
 # =========================================================
-FROM --platform=linux/arm64 node:20-bookworm AS builder
+FROM node:20-bookworm AS builder
 
 ENV DEBIAN_FRONTEND=noninteractive
 ENV PUPPETEER_SKIP_DOWNLOAD=true
